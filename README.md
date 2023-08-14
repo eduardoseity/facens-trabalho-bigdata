@@ -47,7 +47,7 @@ Neste sistema o hdfs se encarrega da parte de armazenamento do NameNode e dos Da
 # IMPLEMENTAÇÃO
 A implementação não foi uma tarefa fácil, principalmente pela diversidade de dispositivos com configurações distintas.<br>
 Como primeiro passo eu optei por instalar e configurar cada coisa.<br>
-Abaixo pode-se observar o que deu certo e o que deu errado:<br>
+Abaixo pode-se observar o que deu certo e o que deu errado:<br><br>
 <img src='images/instalacao-e-configuracao.png'>
 Inicialmente tentei instalar o Hadoop HDFS no Windows 11. A instalação não foi um problema, porém ao tentar comunicar com os demais nós não obtive sucesso.<br>
 O hdfs utiliza o protocolo SSH para se comunicar com os nós, porém parece que o SSH não se dá bem com o sistema de autenticação do Windows (Windows Hello), pois a autenticação é feita através de biometria e não há um usuário e senha convencional necessários para a autenticação via SSH. A solução foi instalar uma distribuição do Ubuntu ao lado do Windows.
@@ -73,12 +73,14 @@ A primeira tela mostra um total de 3 nós ativos e é possível observar o arqui
 Na segunda tela foram desabilitados 2 nós e listados os arquivos da raíz. É possível verificar que mesmo com apenas 1 nó em funcionamento o arquivo <i>TESTE.txt</i> ainda pode ser acessado.
 <br>
 Com isso validamos a parte do hdfs.
+
 ### KAFKA
 <b>Teste de envio de mensagens</b>
 O Kafka funciona como um serviço de mensageria onde as mensagens são enviadas para um tópico previamente criado. Esses tópicos podem ser consumidos por qualquer nó que precise das informações.
 
 <img src='images/teste-kafka.png'>
 O teste realizado acima mostra o nó Raspberry Pi enviando as mensagens de teste para um tópico de teste e as mesmas mensagens sendo consumidas pelo nó Dell Latitude. Esta troca de mensagens acontece em tempo real que é uma das fortes características do Kafka.
+
 ### MAP REDUCE
 <b>Teste utilizando a bilbioteca MRJob</b>
 A biblioteca MRJob desenvolvida para Python facilita a criação de rotinas Map Reduce em ambientes hdfs. A documentação pode ser lida no link <small>[https://mrjob.readthedocs.io/en/latest/]</small>.
@@ -86,6 +88,7 @@ A biblioteca MRJob desenvolvida para Python facilita a criação de rotinas Map 
 <img src='images/teste-map-reduce.png'>
 
 O algoritmo criado faz a separação das categorias em chave-valor, onde a chave representa a categoria e o valor inicialmente é 1. O próximo passo é realizar a somatória dos valores para cada categoria, obtendo a quantidade de vezes que cada categoria aparece no dataset.
+
 ### MONGO DB
 O mongo DB foi testado utilizando o mongosh que é um shell para poder interagir com os bancos de dados e coleções de forma prática.
 <img src='images/teste-mongo-db.png'>
@@ -93,12 +96,12 @@ Acima um exemplo de criação de uma coleção dentro do banco de dados TESTE_DB
 ## IMPLEMENTAÇÃO [FLUXO]
 Abaixo podemos ver o fluxo da implementação e cada tecnologia utilizada. O fluxo começa com a coleta de dados, ingestão, transformação, carregamento e visualização.
 <img src='images/implementação-fluxo.png'>
-<b>Web Scraping</b>
+<b>Web Scraping</b><br>
 <img src='images/web-scraping.png'>
 O script que realiza o scraping de dados foi salvo no Raspberry Pi que fica responsável pela execução todos os dias em um horário programado.<br>
 Os dados são salvos localmente em um arquivo csv único.
 
-<b>ETL</b>
+<b>ETL</b><br>
 O ETL trata da extração, transformação e carregamento dos dados.<br>
 Abaixo está um esquema de como isso funciona na nossa arquitetura.
 <img src='images/etl.png'>
@@ -106,11 +109,12 @@ Resumidamente o Kafka se encarrega de fazer a extração do dataset e envia os d
 Ao receber uma mensagem no tópico o nó responsável envia os dados para o Map Reduce e os dados transformados são inseridos no banco de dados.
 Ao final do processo teremos um banco de dados atualizado com os dados transformados pelo Map Reduce, neste exemplo teremos a contagem de quantas vezes cada categoria aparece no ranking de produtos mais vendidos.
 
-<b>Plotly</b>
+<b>Plotly</b><br>
 A biblioteca Plotly foi utilizada para visualização dos dados, pois possui uma forma dinâmica de exibição dos gráficos e é fácil de implementar.
 <img src='images/plotly.png'>
 No exemplo acima foi criada uma visualização com os dados obtidos do banco de dados. A coleção apresenta quais são as categorias que mais aparecem no rank de produtos mais vendidos.<br>
 Utilizando a mesma arquitetura é possível obter insights utilizando outras consultas, como por exemplo, qual é o preço médio dos produtos mais vendidos?, qual é a influência do frete grátis para que um produto esteja em um rank mais elevado?, até que valor de produto os juros começam a afetar a decisão de compra?, etc.
+
 ## DESAFIOS
 Este projeto contou com muitos desafios, entre eles vale destacar:
 - Baixo conhecimento contra diversidade de tecnologias
